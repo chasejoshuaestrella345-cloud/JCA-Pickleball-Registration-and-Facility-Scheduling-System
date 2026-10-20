@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111337">
+  <meta name="description" content="Reserve a JCA Sports facility, check available timeslots, and manage your game schedule.">
+  <title>JCA Sports Registration | Play your way</title>
+  <style>
+    :root{color-scheme:light;
+      --navy:#111337;
+      --yellow:#ffb900;
+      --yellow-light:#fff5d6;
+      --ink:#191b35;
+      --muted:#74778d;
+      --paper:#fff;
+      --canvas:#f5f6fb;
+      --line:#e8e9f0;
+      --green:#16865c;
+      --red:#c24a57;
+      font-family:Inter,system-ui,"Segoe UI",sans-serif;}*{box-sizing:border-box;}
+      
+      html{scroll-behavior:smooth;scroll-padding-top:88px;}
+      
+      body{margin:0;color:var(--ink);background:var(--canvas);line-height:1.55;}
+      
+      h1,h2,h3,p{margin-top:0;}
+      
+      a{color:inherit;}
+      
+      button,input,select{font:inherit;}
+      
+      .shell{width:min(1160px,calc(100% - 48px));margin-inline:auto;}
+      
+      .site-header{position:sticky;z-index:10;top:0;color:white;background:var(--navy);}
+      
+      .header-inner,.brand,.main-nav,.hero-actions,.hero-stats,.section-heading,.dashboard-card,.slots-toolbar,.slot-legend,.site-footer{display:flex;align-items:center;}
+      
+      .header-inner{min-height:76px;justify-content:space-between;gap:28px;}.brand{gap:10px;color:white;font-size:1rem;font-weight:800;text-decoration:none;}
+      
+      .brand-logo{width:46px;height:46px;padding:3px;border-radius:8px;background:white;object-fit:contain;}
+      
+      .main-nav{gap:24px;}
+      
+      .main-nav a{color:#e1e2ef;font-size:.88rem;font-weight:650;text-decoration:none;}
+      
+      .main-nav a:hover{color:var(--yellow);}
+      
+      .button{display:inline-flex;min-height:44px;align-items:center;justify-content:center;gap:8px;padding:0 18px;border:0;border-radius:8px;color:var(--navy);background:var(--yellow);font-weight:750;text-decoration:none;cursor:pointer;}
+      
+      .button-dark{color:white;background:var(--navy);}
+      
+      :focus-visible{outline:3px solid #5586ff;outline-offset:3px;}.hero{position:relative;overflow:hidden;color:white;background:var(--navy);}
+      
+      .hero::before{position:absolute;top:-280px;right:-80px;width:720px;height:720px;border:1px solid #ffffff12;border-radius:50%;content:"";}
+      
+      .hero-inner{position:relative;display:grid;min-height:480px;grid-template-columns:1fr 1fr;align-items:center;gap:40px;padding-block:56px;}
+      
+      .eyebrow{margin:0 0 14px;color:#eaa900;font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;}
+      
+      .hero h1{max-width:590px;margin-bottom:16px;font-size:clamp(3rem,6vw,5rem);line-height:1;}.hero h1 span{color:var(--yellow);}
+      
+      .hero-copy{max-width:485px;margin-bottom:24px;color:#c5c7da;}
+      
+      .hero-link{color:white;font-weight:700;text-decoration:none;}
+      
+      .hero-actions,.hero-stats{flex-wrap:wrap;gap:16px;}
+      
+      .hero-stats{gap:28px;margin-top:32px;color:#d4d5e2;font-size:.8rem;}
+      
+      .hero-stat strong{color:white;font-size:1rem;}
+      
+      .hero-art{position:relative;display:grid;min-height:340px;place-items:center;}
+      
+      .court-disc{position:absolute;width:min(350px,86%);aspect-ratio:1;border-radius:50%;background:var(--yellow);}
+      
+      .court-disc::before,.court-disc::after{position:absolute;content:"";}
+      
+      .court-disc::before{inset:12%;border:2px solid #11133733;border-radius:50%;}
+      
+      .court-disc::after{top:50%;right:12%;left:12%;height:2px;background:#11133733;}
+      
+      .sports-ball{position:relative;z-index:1;display:grid;width:160px;height:160px;place-items:center;border:8px solid white;border-radius:50%;background:#c8ed49;box-shadow:0 20px 40px #11133740;}
+      
+      .pickleball-svg{width:74%;height:74%;}
+      
+      .float-card{position:absolute;z-index:2;display:flex;align-items:center;gap:12px;padding:12px 15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);background:white;box-shadow:0 12px 32px #0508222e;font-size:.78rem;}
+      
+      .float-card strong{display:block;}
+      
+      .float-icon,.dashboard-icon{display:grid;flex:0 0 auto;place-items:center;border-radius:10px;background:var(--yellow-light);}.float-icon{width:36px;height:36px;}
+      
+      .float-card.one{top:28px;right:0;}
+      
+      .float-card.two{bottom:22px;left:0;}
+      
+      .section{padding-block:68px;}
+      
+      .section-heading{justify-content:space-between;gap:24px;margin-bottom:24px;}
+      
+      .section-heading h2{margin-bottom:6px;font-size:clamp(1.8rem,3vw,2.5rem);}
+      
+      .section-heading p:last-child{margin-bottom:0;color:var(--muted);}
+      
+      .dashboard-grid,.facility-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+      
+      .dashboard-card,.facility-card,.panel{border:1px solid var(--line);border-radius:14px;background:white;}
+      
+      .dashboard-card{min-height:112px;justify-content:space-between;gap:14px;padding:20px;}
+      
+      .dashboard-label{margin-bottom:4px;color:var(--muted);font-size:.8rem;}
+      
+      .dashboard-value{margin:0;font-size:1.8rem;font-weight:800;}
+      
+      .dashboard-meta{margin:5px 0 0;color:var(--muted);font-size:.75rem;}
+      
+      .dashboard-icon{width:46px;height:46px;color:var(--navy);font-size:1.3rem;}
+      
+      .facility-card{overflow:hidden;}
+      
+      .facility-visual{height:150px;background:var(--navy);}
+      
+      .facility-visual img{width:100%;height:100%;object-fit:cover;}
+      
+      .facility-info{padding:16px 18px;}
+      
+      .facility-info h3{margin-bottom:4px;}
+      
+      .facility-info p{margin:0;color:var(--muted);font-size:.82rem;}
+      
+      .booking-section{background:#eceef6;}
+      
+      .booking-layout{display:grid;grid-template-columns:.92fr 1.08fr;align-items:start;gap:20px;}
+      
+      .panel{padding:22px;}.panel h3{margin-bottom:6px;}
+      
+      .panel-intro{margin-bottom:18px;color:var(--muted);font-size:.82rem;}
+      
+      .field{display:grid;gap:7px;margin-bottom:14px;}
+      
+      .field label{font-size:.8rem;font-weight:700;}
+      
+      .field input,.field select{width:100%;min-height:44px;padding:9px 11px;border:1px solid #dfe0e9;border-radius:8px;background:white;}
+      
+      .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+      
+      .booking-form .button{width:100%;}
+      
+      .form-message{min-height:22px;margin:12px 0 0;color:var(--green);font-size:.82rem;}
+      
+      .form-message.error{color:var(--red);}
+      
+      .slots-toolbar{align-items:end;gap:12px;margin-bottom:18px;}
+      
+      .slots-toolbar .field{flex:1;margin:0;}
+      
+      .slot-legend{flex-wrap:wrap;gap:14px;margin-bottom:12px;color:var(--muted);font-size:.75rem;}
+      
+      .legend-item{display:inline-flex;align-items:center;gap:6px;}
+      
+      .legend-dot{width:9px;height:9px;border-radius:50%;background:#37a77b;}
+      
+      .legend-dot.booked{background:#e66d75;}
+      
+      .slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+      
+      .slot{display:grid;min-height:58px;align-content:center;padding:8px;border:1px solid #bde6d5;border-radius:8px;color:#14724e;background:#f1fbf6;text-align:left;cursor:pointer;}
+      
+      .slot.booked{border-color:#f0c6c8;color:#ad4650;background:#fff5f5;cursor:not-allowed;}
+      
+      .slot strong{font-size:.8rem;}
+      
+      .slot span{font-size:.7rem;}
+      
+      .slot-empty{grid-column:1 / -1;padding:16px;color:var(--muted);text-align:center;}
+      
+      .schedule-section{padding-bottom:76px;}
+      
+      .schedule-list{display:grid;gap:10px;}
+      
+      .schedule-row{display:grid;grid-template-columns:.8fr 1fr 1fr .8fr auto;align-items:center;gap:16px;padding:15px 18px;border:1px solid var(--line);border-radius:12px;background:white;}
+      
+      .schedule-date,.schedule-name{color:var(--muted);font-size:.8rem;}
+      
+      .schedule-date strong{display:block;color:var(--ink);}
+      
+      .schedule-facility,.schedule-time{font-weight:700;}
+      
+      .schedule-badge{justify-self:end;padding:5px 9px;border-radius:99px;color:#14724e;background:#e9f8f0;font-size:.7rem;}
+      
+      .empty-schedule{padding:28px;border:1px dashed #cfd1df;border-radius:12px;color:var(--muted);text-align:center;}
+      
+      .guidelines{padding:60px 0;color:white;background:var(--navy);}
+      
+      .guidelines .section-heading h2{color:white;}
+      
+      .guidelines .section-heading p:last-child,.guideline-card p{color:#b9bbd0;}
+      
+      .guidelines .eyebrow,.guideline-card span{color:var(--yellow);}
+      
+      .guideline-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+      
+      .guideline-card{min-height:140px;padding:18px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0d;}
+      
+      .guideline-card span{display:block;margin-bottom:12px;font-size:1.2rem;}
+      
+      .guideline-card h3{margin-bottom:6px;font-size:.9rem;}
+      
+      .guideline-card p{margin:0;font-size:.78rem;}
+      
+      .site-footer{min-height:76px;justify-content:space-between;gap:16px;color:var(--muted);font-size:.78rem;}
+      
+      .site-footer p{margin:0;}@media (max-width:850px){.main-nav{gap:14px;}
+      
+      .hero-inner{grid-template-columns:1fr .8fr;gap:20px;}
+      
+      .booking-layout{grid-template-columns:1fr;}
+      
+      .guideline-grid{grid-template-columns:repeat(2,1fr);}}
+      
+      @media (max-width:620px){.shell{width:calc(100% - 32px);}
+      
+      .main-nav a:not(.button){display:none;}
+      
+      .hero-inner{grid-template-columns:1fr;gap:0;padding-block:42px 28px;}
+      
+      .hero-art{min-height:280px;margin-top:12px;}
+      
+      .float-card.one{top:10px;}
+      
+      .float-card.two{bottom:4px;}
+      
+      .section{padding-block:48px;}
+      
+      .section-heading{align-items:start;}
+      
+      .dashboard-grid,.facility-grid,.guideline-grid{grid-template-columns:1fr;}
+      
+      .facility-card{display:grid;grid-template-columns:105px 1fr;}
+      
+      .facility-visual{height:100%;min-height:100px;}
+      
+      .facility-info{align-self:center;}
+      
+      .form-row,.slots-toolbar{grid-template-columns:1fr;}
+      
+      .slots-toolbar{align-items:stretch;flex-direction:column;}
+      
+      .slots-grid{grid-template-columns:repeat(2,1fr);}
+      
+      .schedule-row{grid-template-columns:1fr 1fr;gap:10px;}
+      
+      .schedule-badge{justify-self:start;}
+      
+      .site-footer{flex-wrap:wrap;padding-block:16px;}}
+      
+      @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto !important;}}
+  </style>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#home" aria-label="JCA Sports home"><img class="brand-logo" src="https://2.bp.blogspot.com/_8mJce1lPpnU/TDWONfBBDOI/AAAAAAAAA9g/DEZb6n3kAd0/s1600/JCA+LOGO.jpg" alt=""> JCA Pickleball Registration and Facilities Scheduling</a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#facilities">Facilities</a>
+        <a href="#schedule">Schedule</a>
+        <a href="#guidelines">Guidelines</a>
+        <a class="button" href="#register">Book a slot <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="shell hero-inner">
+        <div>
+          <p class="eyebrow">JCA reservation</p>
+          <h1 id="hero-title">JCA <span>reservation slots</span></h1>
+          <p class="hero-copy">Find an open timeslot, reserve your favorite JCA facility, and keep your game plan all in one place.</p>
+          <div class="hero-actions">
+            <a class="button" href="#register">Reserve a facility <span aria-hidden="true">→</span></a>
+            <a class="hero-link" href="#availability">Check availability <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-stats" aria-label="Facility highlights">
+            <div class="hero-stat"><span class="stat-dot"></span><span><strong>3</strong><span> sports facilities</span></span></div>
+            <div class="hero-stat"><span class="stat-dot"></span><span><strong>7 days</strong><span> booking access</span></span></div>
+            <div class="hero-stat"><span class="stat-dot"></span><span><strong>Easy</strong><span> online registration</span></span></div>
+          </div>
+        </div>
+        <div class="hero-art" aria-label="Sports facilities and reservations">
+          <div class="court-disc" aria-hidden="true"></div>
+          <div class="sports-ball" aria-hidden="true"><svg class="pickleball-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="#c8ed49"/><g fill="#466d18"><circle cx="30" cy="25" r="4"/><circle cx="50" cy="20" r="4"/><circle cx="70" cy="27" r="4"/><circle cx="22" cy="45" r="4"/><circle cx="43" cy="43" r="4"/><circle cx="65" cy="47" r="4"/><circle cx="82" cy="48" r="4"/><circle cx="30" cy="67" r="4"/><circle cx="52" cy="66" r="4"/><circle cx="73" cy="69" r="4"/><circle cx="45" cy="86" r="4"/><circle cx="66" cy="87" r="4"/></g></svg></div>
+          <div class="float-card one"><span class="float-icon" aria-hidden="true">✓</span><span><strong>You're on the roster</strong>Easy court reservations</span></div>
+          <div class="float-card two"><span class="float-icon" aria-hidden="true">📍</span><span><strong>JCA Sports Center</strong>Your next game starts here</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="dashboard" aria-labelledby="dashboard-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">At a glance</p><h2 id="dashboard-title">Your sports dashboard</h2><p>A quick look at facility bookings and the day ahead.</p></div>
+      </div>
+      <div class="dashboard-grid">
+        <article class="dashboard-card"><div><p class="dashboard-label">Bookings today</p><p class="dashboard-value" id="today-count">0</p><p class="dashboard-meta">Reservations across all facilities</p></div><span class="dashboard-icon" aria-hidden="true">📅</span></article>
+        <article class="dashboard-card"><div><p class="dashboard-label">Sports facilities</p><p class="dashboard-value">3</p><p class="dashboard-meta">Courts ready for your next game</p></div><span class="dashboard-icon" aria-hidden="true">🏟️</span></article>
+        <article class="dashboard-card"><div><p class="dashboard-label">Open slots today</p><p class="dashboard-value" id="open-count">36</p><p class="dashboard-meta">One-hour sessions, 8:00 AM–7:00 PM</p></div><span class="dashboard-icon" aria-hidden="true">⏱️</span></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="facilities" aria-labelledby="facilities-title" style="padding-top: 0">
+      <div class="section-heading">
+        <div><p class="eyebrow">Find your venue</p><h2 id="facilities-title">Our facilities</h2><p>Choose a space, bring your group, and make the most of your reservation.</p></div>
+        <a class="button button-dark" href="#register">Find a timeslot <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="facility-grid">
+        <article class="facility-card"><div class="facility-visual"><img src="https://tse2.mm.bing.net/th/id/OIP.td8q9kLREjOiBYbsOAytUgHaFi?r=0&amp;rs=1&amp;pid=ImgDetMain&amp;o=7&amp;rm=3" alt="Seed Dome facility"></div><div class="facility-info"><h3>Seed Dome</h3><p>Reserve the dome for your next event or activity.</p></div></article>
+        <article class="facility-card"><div class="facility-visual"><img src="https://tse1.mm.bing.net/th/id/OIP.jkd09zubhN5TyymaZnQ9uwHaE8?r=0&amp;rs=1&amp;pid=ImgDetMain&amp;o=7&amp;rm=3" alt="Skyline Arch facility"></div><div class="facility-info"><h3>Skyline Arch</h3><p>A distinctive venue for group gatherings and events.</p></div></article>
+        <article class="facility-card"><div class="facility-visual"><img src="https://jcsgo.edu.ph/wp-content/uploads/IMG_7521-1024x683.png" alt="Sky Arch facility"></div><div class="facility-info"><h3>Sky Arch</h3><p>Find a time and make this open-air venue yours.</p></div></article>
+      </div>
+    </section>
+
+    <section class="section booking-section" id="register" aria-labelledby="booking-title">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Make it official</p><h2 id="booking-title">Register your game</h2><p>Choose a facility and date, then select an available timeslot to reserve.</p></div>
+        </div>
+        <div class="booking-layout">
+          <section class="panel" aria-labelledby="form-title">
+            <h3 id="form-title">Reservation form</h3>
+            <p class="panel-intro">All fields are required to hold your spot.</p>
+            <form class="booking-form" id="booking-form">
+              <div class="field"><label for="full-name">Full name</label><input id="full-name" name="fullName" type="text" placeholder="Enter your full name" autocomplete="name" required maxlength="80"></div>
+              <div class="field"><label for="facility">Choose a facility</label><select id="facility" name="facility" required><option value="">Select a facility</option><option>Seed Dome</option><option>Skyline Arch</option><option>Sky Arch</option></select></div>
+              <div class="form-row">
+                <div class="field"><label for="booking-date">Reservation date</label><input id="booking-date" name="date" type="date" required></div>
+                <div class="field"><label for="booking-time">Available time</label><select id="booking-time" name="time" required disabled><option value="">Select date and facility first</option></select></div>
+              </div>
+              <button class="button button-dark" type="submit">Confirm reservation <span aria-hidden="true">→</span></button>
+              <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="panel" id="availability" aria-labelledby="availability-title">
+            <h3 id="availability-title">Timeslot monitor</h3>
+            <p class="panel-intro">Live availability for your selected facility and date.</p>
+            <div class="slots-toolbar">
+              <div class="field"><label for="monitor-facility">Facility</label><select id="monitor-facility"><option>Seed Dome</option><option>Skyline Arch</option><option>Sky Arch</option></select></div>
+              <div class="field"><label for="monitor-date">Date</label><input id="monitor-date" type="date"></div>
+            </div>
+            <div class="slot-legend" aria-label="Timeslot key"><span class="legend-item"><span class="legend-dot"></span> Available</span><span class="legend-item"><span class="legend-dot booked"></span> Reserved</span></div>
+            <div class="slots-grid" id="slots-grid" aria-live="polite"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell schedule-section" id="schedule" aria-labelledby="schedule-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Plan your play</p><h2 id="schedule-title">Reservation schedule</h2><p>Upcoming bookings are listed here as soon as they're confirmed.</p></div>
+      </div>
+      <div class="schedule-list" id="schedule-list" aria-live="polite"></div>
+    </section>
+
+    <section class="guidelines" id="guidelines" aria-labelledby="guidelines-title">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">Play fair, play safe</p><h2 id="guidelines-title">Before you hit the court</h2><p>A few simple guidelines help everyone enjoy their time at JCA Sports.</p></div>
+        </div>
+        <div class="guideline-grid">
+          <article class="guideline-card"><span aria-hidden="true">⏰</span><h3>Arrive on time</h3><p>Please arrive a few minutes early. Your reserved session lasts one hour.</p></article>
+          <article class="guideline-card"><span aria-hidden="true">👟</span><h3>Wear proper gear</h3><p>Use suitable indoor sportswear and non-marking court shoes.</p></article>
+          <article class="guideline-card"><span aria-hidden="true">🤝</span><h3>Respect the space</h3><p>Take care of the equipment and leave the facility clean for the next group.</p></article>
+          <article class="guideline-card"><span aria-hidden="true">📣</span><h3>Cancel if plans change</h3><p>Let the facility team know if you can no longer make your reservation.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell site-footer">
+    <a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">J</span> JCA SPORTS</a>
+    <p>Good games start with a great reservation.</p>
+    <p>© <span id="year"></span> JCA Sports Registration</p>
+  </footer>
+
+  <script>
+    // Replace this placeholder with the deployed Google Apps Script Web app URL ending in /exec.
+    const API_URL = "https://script.google.com/macros/s/AKfycbytLsIvnMupQVypx9P7C_dg_bzoqm8ovOYs3P2WhswvUMzyrR8LQ5woaTvtb8airkHojA/exec";
+    const $ = (id) => document.querySelector(id);
+    const facilities = ["Seed Dome", "Skyline Arch", "Sky Arch"];
+    const hours = Array.from({ length: 12 }, (_, i) => i + 8);
+    const form = $("#booking-form"), name = $("#full-name"), facility = $("#facility");
+    const date = $("#booking-date"), time = $("#booking-time"), monitorFacility = $("#monitor-facility");
+    const monitorDate = $("#monitor-date"), slots = $("#slots-grid"), schedule = $("#schedule-list"), message = $("#form-message");
+    let bookings = [];
+    let busy = false;
+
+    const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    const label = (hour) => new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit" }).format(new Date(2000, 0, 1, hour));
+    const taken = (list, f, d, h) => list.some((b) => b.facility === f && b.date === d && Number(b.hour) === h);
+    const add = (parent, tag, text, cls = "") => {
+      const el = document.createElement(tag);
+      el.textContent = text;
+      if (cls) el.className = cls;
+      parent.append(el);
+      return el;
+    };
+    const apiConfigured = () => API_URL.startsWith("https://script.google.com/") && !API_URL.includes("PASTE_YOUR_");
+
+    async function requestBookings() {
+      if (!apiConfigured()) throw new Error("Connect the website to your deployed Apps Script URL first.");
+      const response = await fetch(`${API_URL}?action=list&t=${Date.now()}`);
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.error || "Could not load reservations.");
+      bookings = Array.isArray(data.bookings) ? data.bookings : [];
+      return bookings;
+    }
+
+    function render(list = bookings) {
+      const f = monitorFacility.value, d = monitorDate.value;
+      slots.replaceChildren();
+      if (!f || !d) add(slots, "p", "Choose a facility and date.", "slot-empty");
+      else hours.forEach((h) => {
+        const reserved = taken(list, f, d, h);
+        const button = add(slots, "button", "", `slot${reserved ? " booked" : ""}`);
+        button.type = "button";
+        button.disabled = reserved || busy;
+        button.setAttribute("aria-label", `${label(h)}: ${reserved ? "reserved" : "available"}`);
+        add(button, "strong", `${label(h)} – ${label(h + 1)}`);
+        add(button, "span", reserved ? "Reserved" : "Available");
+        if (!reserved) button.onclick = () => {
+          facility.value = f; date.value = d;
+          refreshTimeOptions();
+          time.value = String(h);
+          $("#register").scrollIntoView({ behavior: "smooth" }); name.focus();
+        };
+      });
+
+      refreshTimeOptions(list);
+      schedule.replaceChildren();
+      const upcoming = list.filter((b) => b.date >= today() && b.status !== "Cancelled")
+        .sort((a, b) => a.date.localeCompare(b.date) || Number(a.hour) - Number(b.hour));
+      if (!upcoming.length) add(schedule, "div", "No upcoming reservations yet.", "empty-schedule");
+      upcoming.forEach((b) => {
+        const row = add(schedule, "article", "", "schedule-row");
+        add(add(row, "div", "", "schedule-date"), "strong",
+          new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(`${b.date}T12:00:00`)));
+        add(row, "div", b.facility, "schedule-facility");
+        add(row, "div", `Registered by ${b.name}`, "schedule-name");
+        add(row, "div", `${label(Number(b.hour))} – ${label(Number(b.hour) + 1)}`, "schedule-time");
+        add(row, "span", b.status || "Confirmed", "schedule-badge");
+      });
+      $("#today-count").textContent = list.filter((b) => b.date === today() && b.status !== "Cancelled").length;
+      $("#open-count").textContent = Math.max(0, hours.length * facilities.length -
+        list.filter((b) => b.date === today() && b.status !== "Cancelled").length);
+    }
+
+    function refreshTimeOptions(list = bookings) {
+      time.replaceChildren();
+      add(time, "option", facility.value && date.value ? "Choose a time" : "Select facility and date first").value = "";
+      time.disabled = busy || !facility.value || !date.value;
+      if (facility.value && date.value) {
+        hours.filter((h) => !taken(list, facility.value, date.value, h)).forEach((h) => {
+          const option = add(time, "option", `${label(h)} – ${label(h + 1)}`);
+          option.value = String(h);
+        });
+      }
+      if (time.options.length === 1 && facility.value && date.value) {
+        time.options[0].textContent = "No times available";
+        time.disabled = true;
+      }
+    }
+
+    async function refresh() {
+      if (!apiConfigured()) {
+        slots.replaceChildren();
+        add(slots, "p", "Add your Apps Script Web app URL to enable live availability.", "slot-empty");
+        message.textContent = "Setup required: deploy Apps Script and paste its /exec URL into API_URL.";
+        message.classList.add("error");
+        $("#today-count").textContent = "—";
+        $("#open-count").textContent = "—";
+        refreshTimeOptions([]);
+        return;
+      }
+      try {
+        message.textContent = "";
+        message.classList.remove("error");
+        const list = await requestBookings();
+        render(list);
+      } catch (error) {
+        message.textContent = error.message;
+        message.classList.add("error");
+        slots.replaceChildren();
+        add(slots, "p", "Availability could not be loaded. Check the Apps Script deployment and connection.", "slot-empty");
+      }
+    }
+
+    date.min = monitorDate.min = date.value = monitorDate.value = today();
+    $("#year").textContent = new Date().getFullYear();
+    [facility, date, monitorFacility, monitorDate].forEach((el) => el.addEventListener("change", refresh));
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+      message.classList.remove("error");
+      if (!form.reportValidity() || busy) return;
+      if (!apiConfigured()) {
+        message.textContent = "Database not connected. Add the deployed Apps Script URL to API_URL.";
+        message.classList.add("error");
+        return;
+      }
+      const booking = { action: "create", name: name.value.trim(), facility: facility.value, date: date.value, hour: Number(time.value) };
+      if (!booking.name || !facilities.includes(booking.facility) || !hours.includes(booking.hour) || booking.date < today()) {
+        message.textContent = "Enter a valid name, facility, date, and time.";
+        message.classList.add("error");
+        return;
+      }
+      busy = true;
+      const submitButton = form.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = "Saving reservation…";
+      try {
+        // text/plain avoids a browser CORS preflight for Apps Script web apps.
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(booking)
+        });
+        const data = await response.json();
+        if (!data.ok) throw new Error(data.error || "Could not save reservation.");
+        message.textContent = `Reservation confirmed for ${booking.name}: ${booking.facility}, ${booking.date}, ${label(booking.hour)}.`;
+        name.value = "";
+        monitorFacility.value = booking.facility;
+        monitorDate.value = booking.date;
+        await refresh();
+      } catch (error) {
+        message.textContent = error.message || "Could not connect to the database. Please try again.";
+        message.classList.add("error");
+      } finally {
+        busy = false;
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Confirm reservation <span aria-hidden="true">→</span>';
+        refreshTimeOptions();
+      }
+    });
+
+    refresh();
+  </script>
+</body>
+</html>
